@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #f5f7fa;
+}
+
+.header-container {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
+
+.home-page-container {
+  padding-bottom: 3.5rem;
+}
+
+.signup-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 11vh);
+}
+
+.signup-container>form {
+  width: 100%;
+}
+
+.signin-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 11vh);
+}
+
+.signin-container>form {
+  width: 100%;
+}
