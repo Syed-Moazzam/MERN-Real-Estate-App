@@ -11,5 +11,8 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    'import.meta.env': JSON.stringify(process.env),
+  },
   plugins: [react()],
 });
