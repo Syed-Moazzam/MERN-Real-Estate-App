@@ -65,7 +65,7 @@ const Home = () => {
 
         <Link
           to={"/search"}
-          className="bg-blue-700 text-white p-3 text-center md:text-left rounded-lg mt-3 hover:opacity-90 w-[160px]"
+          className="bg-blue-700 text-white p-3 text-center rounded-lg mt-3 hover:opacity-90 w-[160px]"
         >
           Let's get started..
         </Link>
