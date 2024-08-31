@@ -13,7 +13,8 @@ import {
   FaChair,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import Contact from "../components/Contact";
+import Contact from "../../components/Contact";
+import Loader from '../../components/Loader';
 
 const Listing = () => {
   SwiperCore.use([Navigation]);
@@ -49,9 +50,11 @@ const Listing = () => {
 
   return (
     <main>
-      {loading && <p className="text-center my-7 text-2xl">Loading....</p>}
+      {loading && <div className="text-center my-7 text-2xl">
+        <Loader containerHeight={'350px'} width={'50'} height={'50'} />
+      </div>}
       {error && (
-        <p className="text-center my-7 text-2xl">Something went wrong!</p>
+        <p className="text-center my-7 font-semibold text-3xl">Something went wrong!</p>
       )}
 
       {listing && !loading && !error && (
@@ -86,7 +89,7 @@ const Listing = () => {
               Link copied!
             </p>
           )}
-          <div className="flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4">
+          <div className="flex flex-col max-w-4xl mx-auto p-3 mt-20 mb-28 gap-4">
             <p className="text-2xl font-semibold">
               {listing.name} - ${" "}
               {listing.offer

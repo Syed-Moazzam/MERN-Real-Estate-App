@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ListingItem from "../components/ListingItem";
+import ListingItem from "../../components/ListingItem";
+import Loader from '../../components/Loader'
 
 const Search = () => {
   const navigate = useNavigate();
@@ -239,12 +240,12 @@ const Search = () => {
         </h1>
         <div className="p-7 flex flex-wrap gap-4">
           {!loading && listings.length === 0 && (
-            <p className="text-xl text-slate-700">No listing found!</p>
+            <p className="text-xl text-slate-700 font-semibold">No listing found!</p>
           )}
           {loading && (
-            <p className="text-xl text-slate-700 text-center w-full">
-              Loading...
-            </p>
+            <div className="text-xl text-slate-700 text-center w-full">
+              <Loader containerHeight={'150px'} width={'40'} height={'40'} />
+            </div>
           )}
 
           {!loading &&

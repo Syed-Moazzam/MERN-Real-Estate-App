@@ -5,7 +5,7 @@ import {
   signInStart,
   signInSuccess,
   signInFailure,
-} from "../redux/user/userSlice";
+} from "../../redux/user/userSlice";
 import { toast } from "react-toastify";
 
 const SignIn = () => {

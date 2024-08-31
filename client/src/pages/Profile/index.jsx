@@ -6,7 +6,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import {
   updateUserStart,
   updateUserSuccess,
@@ -17,7 +17,7 @@ import {
   signOutUserStart,
   signOutUserFailure,
   signOutUserSuccess,
-} from "../redux/user/userSlice";
+} from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
