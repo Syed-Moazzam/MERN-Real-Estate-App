@@ -51,7 +51,7 @@ const Listing = () => {
   return (
     <main>
       {loading && <div className="text-center my-7 text-2xl">
-        <Loader containerHeight={'350px'} width={'50'} height={'50'} />
+        <Loader containerHeight={'350px'} width={'45'} height={'45'} />
       </div>}
       {error && (
         <p className="text-center my-7 font-semibold text-3xl">Something went wrong!</p>
