@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Signin from "./pages/Signin";
+import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/listing/:listingId" element={<Listing />} />
 
         <Route path='/sign-up' element={<ProtectedRoute path='/sign-up' component={SignUp} />} />
-        <Route path='/sign-in' element={<ProtectedRoute path='/sign-in' component={Signin} />} />
+        <Route path='/sign-in' element={<ProtectedRoute path='/sign-in' component={SignIn} />} />
         <Route path='/profile' element={<ProtectedRoute path='/profile' component={Profile} />} />
         <Route path='/create-listing' element={<ProtectedRoute path='/create-listing' component={CreateListing} />} />
         <Route path='/update-listing/:listingId' element={<ProtectedRoute path='/update-listing/:listingId' component={UpdateListing} />} />
