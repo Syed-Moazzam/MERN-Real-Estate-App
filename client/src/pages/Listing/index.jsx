@@ -63,7 +63,7 @@ const Listing = () => {
             {listing.imageUrls.map((url) => (
               <SwiperSlide key={url}>
                 <div
-                  className="h-[550px]"
+                  className="h-[450px] sm:h-[550px]"
                   style={{
                     background: `url(${url}) center no-repeat`,
                     backgroundSize: "cover",
@@ -89,7 +89,7 @@ const Listing = () => {
               Link copied!
             </p>
           )}
-          <div className="flex flex-col max-w-4xl mx-auto p-3 mt-20 mb-28 gap-4">
+          <div className="flex flex-col max-w-4xl mx-auto p-3 mt-14 mb-20 sm:mt-20 sm:mb-28 gap-4">
             <p className="text-2xl font-semibold">
               {listing.name} - ${" "}
               {listing.offer
