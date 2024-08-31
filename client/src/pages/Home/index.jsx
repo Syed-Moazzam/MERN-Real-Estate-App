@@ -81,7 +81,7 @@ const Home = () => {
 
       {/* Listing  results for offer, sale and rent*/}
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-3 md:mt-5 md:mb-28">
-        {loading ? <Loader containerHeight={'150px'} width={'40'} height={'40'} />
+        {loading ? <Loader containerHeight={'120px'} width={'35'} height={'35'} />
           :
           <>
             {offerListings && offerListings.length > 0 && (
