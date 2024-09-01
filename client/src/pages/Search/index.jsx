@@ -242,9 +242,9 @@ const Search = () => {
           {!loading && listings.length === 0 && (
             <p className="text-xl text-slate-700 font-semibold">No listing found!</p>
           )}
-          {loading && (
+          {!loading && (
             <div className="text-xl text-slate-700 text-center w-full">
-              <Loader containerHeight={'150px'} width={'40'} height={'40'} />
+              <Loader containerHeight={'200px'} width={'35'} height={'35'} />
             </div>
           )}
 

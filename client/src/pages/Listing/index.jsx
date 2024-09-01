@@ -20,7 +20,7 @@ const Listing = () => {
   SwiperCore.use([Navigation]);
   const params = useParams();
   const [listing, setListing] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
@@ -29,7 +29,6 @@ const Listing = () => {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        setLoading(true);
         const res = await fetch(`/api/listing/get/${params.listingId}`);
         const data = await res.json();
         if (data.success === false) {
@@ -49,9 +48,9 @@ const Listing = () => {
   }, [params.listingId]);
 
   return (
-    <main>
+    <main className="min-h-[40vh]">
       {loading && <div className="text-center my-7 text-2xl">
-        <Loader containerHeight={'350px'} width={'45'} height={'45'} />
+        <Loader containerHeight={'300px'} width={'45'} height={'45'} />
       </div>}
       {error && (
         <p className="text-center my-7 font-semibold text-3xl">Something went wrong!</p>
