@@ -1,13 +1,6 @@
 import { useSelector } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../../firebase";
-import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
@@ -21,10 +14,11 @@ import {
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { uploadImageToCloudinary } from "../../api";
 
 const Profile = () => {
   const fileRef = useRef(null);
-  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const { currentUser, loading } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
@@ -40,29 +34,19 @@ const Profile = () => {
   }, [file]);
 
   const handleFileUpload = (file) => {
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshopt) => {
-        const progess =
-          (snapshopt.bytesTransferred / snapshopt.totalBytes) * 100;
-        setFilePerc(Math.round(progess));
-      },
-
-      (error) => {
+    setFileUploadError(false);
+    setFilePerc(0);
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    uploadImageToCloudinary(data)
+      .then((response) => {
+        setFilePerc(100);
+        setFormData({ ...formData, avatar: response?.data?.secure_url });
+      })
+      .catch(() => {
         setFileUploadError(true);
-      },
-
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, avatar: downloadURL });
-        });
-      }
-    );
+      });
   };
 
   const handleChange = (e) => {
