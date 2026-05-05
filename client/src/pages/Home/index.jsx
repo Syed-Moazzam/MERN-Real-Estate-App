@@ -18,17 +18,17 @@ const Home = () => {
     const fetchAllListings = async () => {
       try {
         // offer listings
-        const offer_res = await fetch("/api/listing/get?offer=true&limit=4");
+        const offer_res = await fetch("/api/listing/get?offer=true&limit=6");
         const offer_listings = await offer_res.json();
         setOfferListings(offer_listings);
 
         // rent listings
-        const rent_res = await fetch("/api/listing/get?type=rent&limit=4");
+        const rent_res = await fetch("/api/listing/get?type=rent&limit=6");
         const rent_listings = await rent_res.json();
         setRentListings(rent_listings);
 
         // sale listings
-        const sale_res = await fetch("/api/listing/get?type=sale&limit=4");
+        const sale_res = await fetch("/api/listing/get?type=sale&limit=6");
         const sale_listings = await sale_res.json();
         setSaleListings(sale_listings);
         setLoading(false);
@@ -80,7 +80,7 @@ const Home = () => {
       </Swiper>
 
       {/* Listing  results for offer, sale and rent*/}
-      <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-3 md:mt-5 md:mb-28">
+      <div className="max-w-6xl mx-auto p-3 flex flex-col gap-20 my-3 md:mt-5 md:mb-28">
         {loading ? <Loader containerHeight={'100px'} width={'35'} height={'35'} />
           :
           <>
@@ -146,6 +146,7 @@ const Home = () => {
                 </div>
               </div>
             )}
+
           </>
         }
       </div>

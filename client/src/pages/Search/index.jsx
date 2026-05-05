@@ -1,70 +1,86 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ListingItem from "../../components/ListingItem";
 import Loader from '../../components/Loader'
 
 const Search = () => {
+  const LISTINGS_PER_PAGE = 9;
   const navigate = useNavigate();
-  const [sidebarData, setSidebarData] = useState({
+  const location = useLocation();
+  const defaultSidebarData = {
     searchTerm: "",
-    type: "all",
+    type: "",
     parking: false,
     furnished: false,
     offer: false,
-    sort: "created_at",
+    sort: "createdAt",
     order: "desc",
-  });
-  const [loading, setLoading] = useState();
+  };
+  const parseSearchToFilters = (search) => {
+    const urlParams = new URLSearchParams(search);
+    return {
+      searchTerm: urlParams.get("searchTerm") || "",
+      type: urlParams.get("type") || "",
+      parking: urlParams.get("parking") === "true",
+      furnished: urlParams.get("furnished") === "true",
+      offer: urlParams.get("offer") === "true",
+      sort: urlParams.get("sort") || "createdAt",
+      order: urlParams.get("order") || "desc",
+    };
+  };
+  const [sidebarData, setSidebarData] = useState(() => ({
+    ...defaultSidebarData,
+    ...parseSearchToFilters(location.search),
+  }));
+  const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const searchTermFromUrl = urlParams.get("searchTerm");
-    const typeFromUrl = urlParams.get("type");
-    const parkingFromUrl = urlParams.get("parking");
-    const furnishedFromUrl = urlParams.get("furnished");
-    const offerFromUrl = urlParams.get("offer");
-    const sortFromUrl = urlParams.get("sort");
-    const orderFromUrl = urlParams.get("order");
+  const buildSearchQuery = (filters) => {
+    const urlParams = new URLSearchParams();
+    if (filters.searchTerm) urlParams.set("searchTerm", filters.searchTerm);
+    if (filters.type) urlParams.set("type", filters.type);
+    if (filters.parking) urlParams.set("parking", "true");
+    if (filters.furnished) urlParams.set("furnished", "true");
+    if (filters.offer) urlParams.set("offer", "true");
+    urlParams.set("sort", filters.sort);
+    urlParams.set("order", filters.order);
+    return urlParams.toString();
+  };
+  const buildPaginatedQuery = (filters, startIndex = 0) => {
+    const urlParams = new URLSearchParams(buildSearchQuery(filters));
+    urlParams.set("startIndex", String(startIndex));
+    // fetch one extra item to determine if there is another page
+    urlParams.set("limit", String(LISTINGS_PER_PAGE + 1));
+    return urlParams.toString();
+  };
 
-    if (
-      searchTermFromUrl ||
-      typeFromUrl ||
-      parkingFromUrl ||
-      furnishedFromUrl ||
-      offerFromUrl ||
-      sortFromUrl ||
-      orderFromUrl
-    ) {
-      setSidebarData({
-        searchTerm: searchTermFromUrl || "",
-        type: typeFromUrl || "all",
-        parking: parkingFromUrl === "true" ? true : false,
-        furnished: furnishedFromUrl === "true" ? true : false,
-        offer: offerFromUrl === "true" ? true : false,
-        sort: sortFromUrl || "created_at",
-        order: orderFromUrl || "desc",
-      });
-    }
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      const nextQuery = buildSearchQuery(sidebarData);
+      const currentQuery = location.search.startsWith("?")
+        ? location.search.slice(1)
+        : location.search;
+      if (nextQuery !== currentQuery) {
+        navigate(`/search?${nextQuery}`, { replace: true });
+      }
+    }, 250);
 
     const fetchListings = async () => {
       setLoading(true);
       setShowMore(false);
-      const searchQuery = urlParams.toString();
+      const searchQuery = buildPaginatedQuery(sidebarData, 0);
       const res = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await res.json();
-      if (data.length > 8) {
-        setShowMore(true);
-      } else {
-        setShowMore(false);
-      }
-      setListings(data);
+      setShowMore(data.length > LISTINGS_PER_PAGE);
+      setListings(data.slice(0, LISTINGS_PER_PAGE));
       setLoading(false);
     };
 
     fetchListings();
-  }, [location.search]);
+
+    return () => clearTimeout(debounceTimer);
+  }, [sidebarData]);
 
   const handleChange = (e) => {
     if (
@@ -72,11 +88,14 @@ const Search = () => {
       e.target.id === "rent" ||
       e.target.id === "sale"
     ) {
-      setSidebarData({ ...sidebarData, type: e.target.id });
+      setSidebarData((prev) => ({
+        ...prev,
+        type: prev.type === e.target.id ? "" : e.target.id,
+      }));
     }
 
     if (e.target.id === "searchTerm") {
-      setSidebarData({ ...sidebarData, searchTerm: e.target.value });
+      setSidebarData((prev) => ({ ...prev, searchTerm: e.target.value }));
     }
 
     if (
@@ -84,54 +103,33 @@ const Search = () => {
       e.target.id === "furnished" ||
       e.target.id === "offer"
     ) {
-      setSidebarData({
-        ...sidebarData,
-        [e.target.id]:
-          e.target.checked || e.target.checked === "true" ? true : false,
-      });
+      setSidebarData((prev) => ({
+        ...prev,
+        [e.target.id]: !prev[e.target.id],
+      }));
     }
 
     if (e.target.id === "sort_order") {
-      const sort = e.target.value.split("_")[0] || "created_at";
+      const sort = e.target.value.split("_")[0] || "createdAt";
       const order = e.target.value.split("_")[1] || "desc";
 
-      setSidebarData({ ...sidebarData, sort, order });
+      setSidebarData((prev) => ({ ...prev, sort, order }));
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const urlParams = new URLSearchParams();
-    urlParams.set("searchTerm", sidebarData.searchTerm);
-    urlParams.set("type", sidebarData.type);
-    urlParams.set("parking", sidebarData.parking);
-    urlParams.set("furnished", sidebarData.furnished);
-    urlParams.set("offer", sidebarData.offer);
-    urlParams.set("sort", sidebarData.sort);
-    urlParams.set("order", sidebarData.order);
-
-    const searchQuery = urlParams.toString();
-    navigate(`/search?${searchQuery}`);
   };
 
   const onShowMoreClick = async () => {
     const numberOfListings = listings.length;
-    const startIndex = numberOfListings;
-    const urlParams = new URLSearchParams(location.search);
-    urlParams.set("startIndex", startIndex);
-    const searchQuery = urlParams.toString();
+    const searchQuery = buildPaginatedQuery(sidebarData, numberOfListings);
     const res = await fetch(`/api/listing/get?${searchQuery}`);
     const data = await res.json();
-    if (data.length < 9) {
-      setShowMore(false);
-    }
-    setListings([...listings, ...data]);
+    setShowMore(data.length > LISTINGS_PER_PAGE);
+    setListings((prev) => [...prev, ...data.slice(0, LISTINGS_PER_PAGE)]);
   };
 
   return (
     <div className="flex flex-col md:flex-row">
       <div className="p-7 border-b-2 md:border-r-2 md:min-h-screen">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8">
           <div className="flex items-center gap-2">
             <label className="whitespace-nowrap font-semibold">
               Search Term:
@@ -219,9 +217,9 @@ const Search = () => {
             <label className="font-semibold">Sort:</label>
             <select
               onChange={handleChange}
-              defaultValue={"created_at_desc"}
+              value={`${sidebarData.sort}_${sidebarData.order}`}
               id="sort_order"
-              className="border rounded-lg p-3"
+              className="border rounded-lg p-3 w-full"
             >
               <option value={"regularPrice_desc"}>Price high to low</option>
               <option value={"regularPrice_asc"}>Price low to high</option>
@@ -229,10 +227,7 @@ const Search = () => {
               <option value={"createdAt_asc"}>Oldest</option>
             </select>
           </div>
-          <button className="bg-blue-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
-            Search
-          </button>
-        </form>
+        </div>
       </div>
       <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
@@ -242,7 +237,7 @@ const Search = () => {
           {!loading && listings.length === 0 && (
             <p className="text-xl text-slate-700 font-semibold">No listing found!</p>
           )}
-          {!loading && (
+          {loading && (
             <div className="text-xl text-slate-700 text-center w-full">
               <Loader containerHeight={'200px'} width={'35'} height={'35'} />
             </div>
